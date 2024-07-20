@@ -67,12 +67,12 @@ namespace ElevatorSimulation_Main.Services
                     elevator.LastDirection = "Down";
                 }
 
-                Console.WriteLine($"Elevator {elevator.Id} is at floor {elevator.CurrentFloor} moving {elevator.Direction}");
+                Console.WriteLine($"Elevator {elevator.Id} is at floor {elevator.CurrentFloor} moving {elevator.Direction} carrying {elevator.CurrentPassengers} people");
             }
 
             elevator.Stop();
             elevator.CurrentPassengers = 0; // Passengers leave
-            Console.WriteLine($"Elevator {elevator.Id} has arrived at floor {floor} and is now {elevator.Direction}");
+            Console.WriteLine($"Elevator {elevator.Id} has arrived at floor {floor} and is now {elevator.Direction}, {elevator.CurrentPassengers} passengers remaining");
         }
 
         public void UpdateElevatorStatus()

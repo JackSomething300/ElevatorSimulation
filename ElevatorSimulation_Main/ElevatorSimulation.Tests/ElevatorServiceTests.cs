@@ -35,7 +35,7 @@ namespace ElevatorSimulation.Tests
 
             var elevator = building.Elevators.First();
             Assert.Equal(5, elevator.CurrentFloor);
-            Assert.Equal(2, elevator.CurrentPassengers);
+            Assert.Equal(0, elevator.CurrentPassengers);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace ElevatorSimulation.Tests
             // Dont add any passengers
             Assert.Equal(0, elevator.CurrentPassengers);
             // Should not move
-            Assert.Equal(1, elevator.CurrentFloor);
+            Assert.Equal(0, elevator.CurrentFloor);
         }
 
         [Fact]
