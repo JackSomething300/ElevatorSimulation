@@ -15,6 +15,7 @@ namespace ElevatorSimulation_Main.Models
         public bool IsMoving { get; set; }
         public string Direction { get; set; }
         public string LastDirection { get; set; } = "Stationary";
+        public int? DestinationFloor { get; set; }
 
         public Elevator(int id, int maxPassengers)
         {

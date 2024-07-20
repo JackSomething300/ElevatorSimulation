@@ -31,7 +31,7 @@ namespace ElevatorSimulation.Tests
             var building = new Building(10, 3, 5);
             var service = new ElevatorService(building);
 
-            service.CallElevator(5, 2);
+            service.CallElevator(0,5, 2);
 
             var elevator = building.Elevators.First();
             Assert.Equal(5, elevator.CurrentFloor);
@@ -45,7 +45,7 @@ namespace ElevatorSimulation.Tests
             var service = new ElevatorService(building);
 
             // Attempt to call an elevator with 6 passengers when max cap is 5
-            service.CallElevator(5, 6);
+            service.CallElevator(0, 5, 6);
 
             var elevator = building.Elevators.First();
             // Dont add any passengers
@@ -63,10 +63,10 @@ namespace ElevatorSimulation.Tests
             //This should be the nearest elevator, because it is not moving and it is 1 floor away
             building.Elevators[2].CurrentFloor = 1;
 
-            service.MoveElevator(building.Elevators[0], 3);
-            service.MoveElevator(building.Elevators[1], 8);
+            service.MoveElevator(building.Elevators[0],0, 3);
+            service.MoveElevator(building.Elevators[1], 0, 8);
 
-            service.CallElevator(2, 2);
+            service.CallElevator(0, 2, 2);
 
             Assert.Equal(2, building.Elevators[2].CurrentFloor);
         }

@@ -10,6 +10,7 @@ namespace ElevatorSimulation_Main.Models
     {
         public int NumberOfFloors { get; set; }
         public List<Elevator> Elevators { get; set; }
+        public int MaxPassengersPerElevator { get; set; }
 
         public Building(int numberOfFloors, int numberOfElevators, int maxPassengersPerElevator)
         {
@@ -19,6 +20,7 @@ namespace ElevatorSimulation_Main.Models
             {
                 Elevators.Add(new Elevator(i + 1, maxPassengersPerElevator));
             }
+            MaxPassengersPerElevator = maxPassengersPerElevator;
         }
     }
 }
