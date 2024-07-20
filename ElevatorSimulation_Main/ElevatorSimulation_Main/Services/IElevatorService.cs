@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElevatorSimulation_Main.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,8 @@ namespace ElevatorSimulation_Main.Services
 {
     public interface IElevatorService
     {
-        void CallElevator(int floor, int passengers);
+        void CallElevator(int currentFloor, int floor, int passengers);
+        void MoveElevator(Elevator elevator, int currentFloor, int destinationFloor);
         void UpdateElevatorStatus();
     }
 }

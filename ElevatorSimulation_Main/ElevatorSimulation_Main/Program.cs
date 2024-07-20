@@ -25,13 +25,53 @@ namespace ElevatorSimulation
 
                 if (command == "1")
                 {
-                    Console.Write("Enter floor number to call the elevator: ");
-                    var floor = int.Parse(Console.ReadLine());
+                    List<(int CurrentFloor, int DestinationFloor, int Passengers)> requests = new List<(int, int, int)>();
 
-                    Console.Write("Enter number of passengers waiting: ");
-                    var passengers = int.Parse(Console.ReadLine());
+                    Console.WriteLine("At any point, enter done to end your selection");
 
-                    elevatorService.CallElevator(floor, passengers);
+                    while (true)
+                    {
+                        Console.WriteLine("-------------------------------------------------------------------");
+                        Console.Write("Enter floor number your are currently on: ");
+                        var currentFloorInput = Console.ReadLine();
+
+                        if (currentFloorInput.ToLower() == "done") break;
+
+                        int currentFloor;
+                        if (!int.TryParse(currentFloorInput, out currentFloor) || currentFloor < 0 || currentFloor >= building.NumberOfFloors)
+                        {
+                            Console.WriteLine("Invalid floor number. Please try again.");
+                            continue;
+                        }
+
+                        Console.Write("Enter destination floor number: ");
+                        var destinationFloorInput = Console.ReadLine();
+
+                        int destinationFloor;
+                        if (!int.TryParse(destinationFloorInput, out destinationFloor) || destinationFloor < 0 || destinationFloor > building.NumberOfFloors)
+                        {
+                            Console.WriteLine("Invalid floor number. Please try again.");
+                            continue;
+                        }
+
+                        Console.Write("Enter number of passengers waiting: ");
+                        var passengersInput = Console.ReadLine();
+
+                        int passengers;
+                        if (!int.TryParse(passengersInput, out passengers) || passengers <= 0)
+                        {
+                            Console.WriteLine("Invalid number of passengers. Please try again.");
+                            continue;
+                        }
+
+                        requests.Add((currentFloor, destinationFloor, passengers));
+                    }
+                    Console.WriteLine("-------------------------------------------------------------------");
+
+                    foreach (var request in requests)
+                    {
+                        elevatorService.CallElevator(request.CurrentFloor, request.DestinationFloor, request.Passengers);
+                    }
                 }
                 else if (command == "2")
                 {

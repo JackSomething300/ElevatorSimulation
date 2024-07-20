@@ -16,16 +16,17 @@ namespace ElevatorSimulation_Main.Services
             _building = building;
         }
 
-        public void CallElevator(int floor, int passengers)
+        public void CallElevator(int currentFloor, int destinationFloor, int passengers)
         {
-            var nearestElevator = FindNearestElevator(floor);
+            var nearestElevator = FindNearestElevator(currentFloor);
 
             if (nearestElevator != null)
             {
                 if (passengers <= nearestElevator.MaxPassengers - nearestElevator.CurrentPassengers)
                 {
                     nearestElevator.CurrentPassengers += passengers;
-                    MoveElevator(nearestElevator, floor);
+                    nearestElevator.DestinationFloor = destinationFloor;
+                    MoveElevator(nearestElevator, currentFloor, destinationFloor);
                 }
                 else
                 {
@@ -37,42 +38,58 @@ namespace ElevatorSimulation_Main.Services
                 Console.WriteLine("No elevators available at the moment. Please wait.");
             }
         }
+
         private Elevator FindNearestElevator(int floor)
         {
             return _building.Elevators
                 .Where(elevator => IsElevatorMovingTowardsOrStationary(elevator, floor))
                 .OrderBy(elevator => Math.Abs(elevator.CurrentFloor - floor))
+                .ThenBy(elevator => elevator.LastDirection == "Stationary" ? 0 : 1) // Prefer stationary elevators
                 .FirstOrDefault()!;
         }
 
         private bool IsElevatorMovingTowardsOrStationary(Elevator elevator, int floor)
         {
-            return (elevator.LastDirection == "Stationary") ||
+            return elevator.DestinationFloor == null || // Exclude elevators already assigned a destination
+                   elevator.LastDirection == "Stationary" ||
                    (elevator.LastDirection == "Up" && elevator.CurrentFloor < floor) ||
                    (elevator.LastDirection == "Down" && elevator.CurrentFloor > floor);
         }
 
-        public void MoveElevator(Elevator elevator, int floor)
+        public void MoveElevator(Elevator elevator, int currentFloor, int destinationFloor)
+        {
+            MoveElevatorToFloor(elevator, currentFloor);
+
+            // Passengers board the elevator
+            Console.WriteLine($"Passengers boarded Elevator {elevator.Id} at floor {currentFloor}, {elevator.CurrentPassengers} passangers are onboard");
+
+            MoveElevatorToFloor(elevator, destinationFloor);
+
+            // Passengers exit the elevator
+            elevator.CurrentPassengers = 0;
+            elevator.DestinationFloor = null;
+            Console.WriteLine($"Passengers exited Elevator {elevator.Id} at floor {destinationFloor}, {elevator.CurrentPassengers} people remaining");
+            Console.WriteLine("-------------------------------------------------------------------");
+        }
+
+        private void MoveElevatorToFloor(Elevator elevator, int floor)
         {
             while (elevator.CurrentFloor != floor)
             {
                 if (elevator.CurrentFloor < floor)
                 {
                     elevator.MoveUp();
-                    elevator.LastDirection = "Up";
                 }
                 else if (elevator.CurrentFloor > floor)
                 {
                     elevator.MoveDown();
-                    elevator.LastDirection = "Down";
                 }
 
-                Console.WriteLine($"Elevator {elevator.Id} is at floor {elevator.CurrentFloor} moving {elevator.Direction} carrying {elevator.CurrentPassengers} people");
+                Console.WriteLine($"Elevator {elevator.Id} is at floor {elevator.CurrentFloor} moving to {elevator.Direction}");
             }
 
             elevator.Stop();
-            elevator.CurrentPassengers = 0; // Passengers leave
-            Console.WriteLine($"Elevator {elevator.Id} has arrived at floor {floor} and is now {elevator.Direction}, {elevator.CurrentPassengers} passengers remaining");
+            Console.WriteLine($"Elevator {elevator.Id} has arrived at floor {floor} and is now {elevator.Direction}");
         }
 
         public void UpdateElevatorStatus()
@@ -81,6 +98,7 @@ namespace ElevatorSimulation_Main.Services
             {
                 Console.WriteLine($"Elevator {elevator.Id}: Floor {elevator.CurrentFloor}, Direction: {elevator.Direction}, Passengers: {elevator.CurrentPassengers}");
             }
+            Console.WriteLine($"This building has {_building.NumberOfFloors} floors and {_building.Elevators.Count()} elevator and {_building.MaxPassengersPerElevator} max passangers per elevator");
         }
     }
 }
