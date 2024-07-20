@@ -37,33 +37,41 @@ namespace ElevatorSimulation_Main.Services
                 Console.WriteLine("No elevators available at the moment. Please wait.");
             }
         }
-
         private Elevator FindNearestElevator(int floor)
         {
             return _building.Elevators
-                .OrderBy(e => e.IsMoving ? int.MaxValue : Math.Abs(e.CurrentFloor - floor))
-                .ThenBy(e => e.IsMoving ? Math.Abs(e.CurrentFloor - floor) : 0)
-                .FirstOrDefault();
+                .Where(elevator => IsElevatorMovingTowardsOrStationary(elevator, floor))
+                .OrderBy(elevator => Math.Abs(elevator.CurrentFloor - floor))
+                .FirstOrDefault()!;
         }
 
-        private void MoveElevator(Elevator elevator, int floor)
+        private bool IsElevatorMovingTowardsOrStationary(Elevator elevator, int floor)
+        {
+            return (elevator.LastDirection == "Stationary") ||
+                   (elevator.LastDirection == "Up" && elevator.CurrentFloor < floor) ||
+                   (elevator.LastDirection == "Down" && elevator.CurrentFloor > floor);
+        }
+
+        public void MoveElevator(Elevator elevator, int floor)
         {
             while (elevator.CurrentFloor != floor)
             {
                 if (elevator.CurrentFloor < floor)
                 {
                     elevator.MoveUp();
+                    elevator.LastDirection = "Up";
                 }
                 else if (elevator.CurrentFloor > floor)
                 {
                     elevator.MoveDown();
+                    elevator.LastDirection = "Down";
                 }
 
                 Console.WriteLine($"Elevator {elevator.Id} is at floor {elevator.CurrentFloor} moving {elevator.Direction}");
             }
 
             elevator.Stop();
-            elevator.CurrentPassengers = 0; // Passengers exit the elevator
+            elevator.CurrentPassengers = 0; // Passengers leave
             Console.WriteLine($"Elevator {elevator.Id} has arrived at floor {floor} and is now {elevator.Direction}");
         }
 
