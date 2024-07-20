@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ElevatorSimulation_Main.Models
 {
-    public class Elevator : BaseElevator
+    public abstract class BaseElevator
     {
         public int Id { get; set; }
         public int CurrentFloor { get; set; }
@@ -17,7 +17,7 @@ namespace ElevatorSimulation_Main.Models
         public string LastDirection { get; set; } = "Stationary";
         public int? DestinationFloor { get; set; }
 
-        public Elevator(int id, int maxPassengers) : base(id, maxPassengers)
+        protected BaseElevator(int id, int maxPassengers)
         {
             Id = id;
             CurrentFloor = 0; // Start at ground floor
@@ -27,24 +27,10 @@ namespace ElevatorSimulation_Main.Models
             Direction = "Stationary";
         }
 
-        public override void MoveUp()
-        {
-            CurrentFloor++;
-            Direction = "Up";
-            IsMoving = true;
-        }
+        public abstract void MoveUp();
 
-        public override void MoveDown()
-        {
-            CurrentFloor--;
-            Direction = "Down";
-            IsMoving = true;
-        }
+        public abstract void MoveDown();
 
-        public override void Stop()
-        {
-            IsMoving = false;
-            Direction = "Stationary";
-        }
+        public abstract void Stop();
     }
 }

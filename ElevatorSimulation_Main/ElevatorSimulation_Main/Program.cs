@@ -7,7 +7,6 @@ namespace ElevatorSimulation
     {
         static void Main(string[] args)
         {
-            // Initialize building with 10 floors, 3 elevators, and each elevator has a max capacity of 5 passengers
             var building = new Building(10, 3, 5);
             var elevatorService = new ElevatorService(building);
 
