@@ -1,4 +1,6 @@
-﻿using ElevatorSimulation_Main.Models;
+﻿using ElevatorSimulation_Core.Entities;
+using ElevatorSimulation_Core.Entities.Abstractions;
+using ElevatorSimulation_Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +11,20 @@ namespace ElevatorSimulation_Main.Services
 {
     public class ElevatorService : IElevatorService
     {
-        private readonly Building _building;
+        private readonly IBuilding _building;
+        private readonly IElevatorControlStrategy _elevatorControlStrategy;
 
-        public ElevatorService(Building building)
+        public ElevatorService(IBuilding building, IElevatorControlStrategy elevatorControlStrategy)
         {
             _building = building;
-        }
+            _elevatorControlStrategy = elevatorControlStrategy;
+        }   
 
         public void CallElevator(int currentFloor, int destinationFloor, int passengers)
         {
             try
             {
-                var nearestElevator = FindNearestElevator(currentFloor);
+                var nearestElevator = _elevatorControlStrategy.FindNearestElevator(currentFloor);
 
                 if (nearestElevator != null)
                 {
@@ -43,39 +47,6 @@ namespace ElevatorSimulation_Main.Services
             catch (Exception e)
             {
                 Console.WriteLine($"An error occurred while calling the elevator: {e.Message}");
-            }
-        }
-
-        private Elevator FindNearestElevator(int floor)
-        {
-            try
-            {
-                return _building.Elevators
-                    .Where(elevator => IsElevatorMovingTowardsOrStationary(elevator, floor))
-                    .OrderBy(elevator => Math.Abs(elevator.CurrentFloor - floor))
-                    .ThenBy(elevator => elevator.LastDirection == "Stationary" ? 0 : 1) // Prefer stationary elevators
-                    .FirstOrDefault()!;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"An error occurred while finding the nearest elevator: {e.Message}");
-                return null;
-            }
-        }
-
-        private bool IsElevatorMovingTowardsOrStationary(Elevator elevator, int floor)
-        {
-            try
-            {
-                return elevator.DestinationFloor == null || // Exclude elevators already assigned a destination
-                       elevator.LastDirection == "Stationary" ||
-                       (elevator.LastDirection == "Up" && elevator.CurrentFloor < floor) ||
-                       (elevator.LastDirection == "Down" && elevator.CurrentFloor > floor);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"An error occurred while checking elevator direction: {e.Message}");
-                return false;
             }
         }
 

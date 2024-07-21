@@ -1,11 +1,10 @@
-﻿using ElevatorSimulation_Main.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElevatorSimulation_Main.Extensions
+namespace ElevatorSimulation_Core.Exceptions
 {
     public static class ValidationHelper
     {

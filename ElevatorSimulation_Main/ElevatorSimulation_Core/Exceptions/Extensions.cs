@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElevatorSimulation_Main.Extensions
+namespace ElevatorSimulation_Core.Exceptions
 {
     public class ElevatorCapacityExceededException : Exception
     {

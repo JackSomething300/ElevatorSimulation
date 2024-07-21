@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElevatorSimulation_Main.Models.Abstractions
+namespace ElevatorSimulation_Core.Entities.Abstractions
 {
-    public class PassengerElevator : BaseElevator
+    public class FreightElevator : BaseElevator
     {
-        public PassengerElevator(int id, int maxPassengers) : base(id, maxPassengers)
+        public FreightElevator(int id, int maxPassengers) : base(id, maxPassengers)
         {
             Id = id;
             CurrentFloor = 0; // Start at ground floor
@@ -18,21 +18,19 @@ namespace ElevatorSimulation_Main.Models.Abstractions
             Direction = "Stationary";
         }
 
-        public override void MoveUp()
-        {
-            CurrentFloor++;
-            LastDirection = "Up";
-        }
-
         public override void MoveDown()
         {
-            CurrentFloor--;
-            LastDirection = "Down";
+            throw new NotImplementedException();
+        }
+
+        public override void MoveUp()
+        {
+            throw new NotImplementedException();
         }
 
         public override void Stop()
         {
-            LastDirection = "Stationary";
+            throw new NotImplementedException();
         }
     }
 }

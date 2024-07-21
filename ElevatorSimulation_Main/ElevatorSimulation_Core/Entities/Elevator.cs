@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElevatorSimulation_Main.Models
+namespace ElevatorSimulation_Core.Entities
 {
     public class Elevator : BaseElevator
     {
