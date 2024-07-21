@@ -1,11 +1,11 @@
-﻿using ElevatorSimulation_Main.Models;
+﻿using ElevatorSimulation_Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElevatorSimulation_Main.Services
+namespace ElevatorSimulation_Core.Interfaces
 {
     public interface IElevatorService
     {

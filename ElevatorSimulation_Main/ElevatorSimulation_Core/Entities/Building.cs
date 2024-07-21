@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ElevatorSimulation_Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElevatorSimulation_Main.Models
+namespace ElevatorSimulation_Core.Entities
 {
-    public class Building
+    public class Building : IBuilding
     {
         public int NumberOfFloors { get; set; }
         public List<Elevator> Elevators { get; set; }

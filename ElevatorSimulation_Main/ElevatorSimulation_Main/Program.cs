@@ -1,6 +1,10 @@
-﻿using ElevatorSimulation_Main.Extensions;
-using ElevatorSimulation_Main.Models;
+﻿using ElevatorSimulation_Core.Exceptions;
+using ElevatorSimulation_Core.Entities;
 using ElevatorSimulation_Main.Services;
+using ElevatorSimulation_Core.Interfaces;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using ElevatorSimulation_Application.Services;
 
 namespace ElevatorSimulation
 {
@@ -8,14 +12,13 @@ namespace ElevatorSimulation
     {
         static void Main(string[] args)
         {
-            var building = new Building(10, 3, 5);
-            var elevatorService = new ElevatorService(building);
+            var serviceProvider = ConfigureServices();
+            var elevatorService = serviceProvider.GetService<IElevatorService>();
 
             while (true)
             {
                 try
                 {
-
                     Console.Clear();
                     elevatorService.UpdateElevatorStatus();
 
@@ -28,52 +31,7 @@ namespace ElevatorSimulation
 
                     if (command == "1")
                     {
-                        List<(int CurrentFloor, int DestinationFloor, int Passengers)> requests = new List<(int, int, int)>();
-
-                        Console.WriteLine("At any point, enter done to end your selection");
-
-                        while (true)
-                        {
-                            Console.WriteLine("-------------------------------------------------------------------");
-                            Console.Write("Enter floor number your are currently on: ");
-                            var currentFloorInput = Console.ReadLine();
-
-                            if (currentFloorInput.ToLower() == "done") break;
-
-                            int currentFloor;
-                            if (!int.TryParse(currentFloorInput, out currentFloor) || currentFloor < 0 || currentFloor >= building.NumberOfFloors)
-                            {
-                                Console.WriteLine("Invalid floor number. Please try again.");
-                                continue;
-                            }
-
-                            ValidationHelper.ValidateFloor(currentFloor, building.NumberOfFloors);
-
-                            Console.Write("Enter destination floor number: ");
-                            var destinationFloorInput = Console.ReadLine();
-
-                            int destinationFloor;
-                            if (!int.TryParse(destinationFloorInput, out destinationFloor) || destinationFloor < 0 || destinationFloor > building.NumberOfFloors)
-                            {
-                                Console.WriteLine("Invalid floor number. Please try again.");
-                                continue;
-                            }
-
-                            Console.Write("Enter number of passengers waiting: ");
-                            var passengersInput = Console.ReadLine();
-
-                            int passengers;
-                            if (!int.TryParse(passengersInput, out passengers) || passengers <= 0)
-                            {
-                                Console.WriteLine("Invalid number of passengers. Please try again.");
-                                continue;
-                            }
-
-                            ValidationHelper.ValidatePassengers(passengers, building.MaxPassengersPerElevator);
-
-                            requests.Add((currentFloor, destinationFloor, passengers));
-                        }
-                        Console.WriteLine("-------------------------------------------------------------------");
+                        var requests = CollectRequests(serviceProvider.GetService<IBuilding>());
 
                         foreach (var request in requests)
                         {
@@ -112,6 +70,58 @@ namespace ElevatorSimulation
                     Console.WriteLine($"An error occurred: {e.Message}");
                 }
             }
+        }
+
+        private static List<(int CurrentFloor, int DestinationFloor, int Passengers)> CollectRequests(IBuilding building)
+        {
+            var requests = new List<(int, int, int)>();
+            Console.WriteLine("At any point, enter done to end your selection");
+
+            while (true)
+            {
+                Console.WriteLine("-------------------------------------------------------------------");
+                Console.Write("Enter floor number you are currently on: ");
+                var currentFloorInput = Console.ReadLine();
+
+                if (currentFloorInput.ToLower() == "done") break;
+
+                if (!int.TryParse(currentFloorInput, out int currentFloor) || currentFloor < 0 || currentFloor >= building.NumberOfFloors)
+                {
+                    Console.WriteLine("Invalid floor number. Please try again.");
+                    continue;
+                }
+
+                Console.Write("Enter destination floor number: ");
+                var destinationFloorInput = Console.ReadLine();
+
+                if (!int.TryParse(destinationFloorInput, out int destinationFloor) || destinationFloor < 0 || destinationFloor > building.NumberOfFloors)
+                {
+                    Console.WriteLine("Invalid floor number. Please try again.");
+                    continue;
+                }
+
+                Console.Write("Enter number of passengers waiting: ");
+                var passengersInput = Console.ReadLine();
+
+                if (!int.TryParse(passengersInput, out int passengers) || passengers <= 0)
+                {
+                    Console.WriteLine("Invalid number of passengers. Please try again.");
+                    continue;
+                }
+
+                requests.Add((currentFloor, destinationFloor, passengers));
+            }
+
+            return requests;
+        }
+
+        private static ServiceProvider ConfigureServices()
+        {
+            return new ServiceCollection()
+                .AddSingleton<IBuilding>(new Building(10, 3, 5)) // Manually create the Building instance
+                .AddSingleton<IElevatorService, ElevatorService>()
+                .AddSingleton<IElevatorControlStrategy, ElevatorControlStrategy>()
+                .BuildServiceProvider();
         }
     }
 }

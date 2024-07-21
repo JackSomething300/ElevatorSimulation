@@ -1,4 +1,5 @@
-﻿using ElevatorSimulation_Main.Models;
+﻿using ElevatorSimulation_Core.Entities;
+using ElevatorSimulation_Core.Interfaces;
 using ElevatorSimulation_Main.Services;
 using Moq;
 using System;
@@ -11,10 +12,13 @@ namespace ElevatorSimulation.Tests
 {
     public class ElevatorServiceTests
     {
-        private Building _building;
+
+        private readonly IBuilding _building;
+        private readonly Mock<IElevatorControlStrategy> _elevatorControlStrategy;
 
         public ElevatorServiceTests()
         {
+            _elevatorControlStrategy = new Mock<IElevatorControlStrategy>();
             _building = new Building(10, 3, 5);
         }
 
@@ -28,12 +32,23 @@ namespace ElevatorSimulation.Tests
         [Fact]
         public void CallElevator_Should_Move_Elevator_To_Correct_Floor()
         {
-            var building = new Building(10, 3, 5);
-            var service = new ElevatorService(building);
+            var mockBuilding = new Mock<IBuilding>();
+            var mockStrategy = new Mock<IElevatorControlStrategy>();
 
-            service.CallElevator(0,5, 2);
+            var elevator = new Elevator(1, 5) { CurrentFloor = 0 };
+            mockBuilding.Setup(b => b.NumberOfFloors).Returns(10);
+            mockBuilding.Setup(b => b.Elevators).Returns(new List<Elevator> { elevator });
+            mockBuilding.Setup(b => b.MaxPassengersPerElevator).Returns(5);
 
-            var elevator = building.Elevators.First();
+            mockStrategy.Setup(strategy => strategy.FindNearestElevator(0))
+                        .Returns(elevator);
+
+            var service = new ElevatorService(mockBuilding.Object, mockStrategy.Object);
+
+            // Act
+            service.CallElevator(0, 5, 2);
+
+            // Assert
             Assert.Equal(5, elevator.CurrentFloor);
             Assert.Equal(0, elevator.CurrentPassengers);
         }
@@ -41,34 +56,49 @@ namespace ElevatorSimulation.Tests
         [Fact]
         public void CallElevator_Should_Not_Exceed_Capacity()
         {
+            // Arrange
             var building = new Building(10, 3, 5);
-            var service = new ElevatorService(building);
-
-            // Attempt to call an elevator with 6 passengers when max cap is 5
-            service.CallElevator(0, 5, 6);
+            var mockStrategy = new Mock<IElevatorControlStrategy>();
 
             var elevator = building.Elevators.First();
-            // Dont add any passengers
-            Assert.Equal(0, elevator.CurrentPassengers);
-            // Should not move
-            Assert.Equal(0, elevator.CurrentFloor);
+            elevator.CurrentFloor = 0;
+
+            mockStrategy.Setup(strategy => strategy.FindNearestElevator(0))
+                        .Returns(elevator);
+
+            var service = new ElevatorService(building, mockStrategy.Object);
+
+            // Act
+            service.CallElevator(0, 5, 6); // Attempt to call an elevator with 6 passengers when max cap is 5
+
+            // Assert
+            Assert.Equal(0, elevator.CurrentPassengers); // Don't add any passengers
+            Assert.Equal(0, elevator.CurrentFloor); // Should not move
         }
 
         [Fact]
         public void CallElevator_Should_Assign_Nearest_Elevator()
         {
+            // Arrange
             var building = new Building(10, 3, 5);
-            var service = new ElevatorService(building);
+            var mockStrategy = new Mock<IElevatorControlStrategy>();
 
-            //This should be the nearest elevator, because it is not moving and it is 1 floor away
-            building.Elevators[2].CurrentFloor = 1;
+            var nearestElevator = building.Elevators[2];
+            nearestElevator.CurrentFloor = 1;
 
-            service.MoveElevator(building.Elevators[0],0, 3);
+            mockStrategy.Setup(strategy => strategy.FindNearestElevator(0))
+                        .Returns(nearestElevator);
+
+            var service = new ElevatorService(building, mockStrategy.Object);
+
+            service.MoveElevator(building.Elevators[0], 0, 3);
             service.MoveElevator(building.Elevators[1], 0, 8);
 
+            // Act
             service.CallElevator(0, 2, 2);
 
-            Assert.Equal(2, building.Elevators[2].CurrentFloor);
+            // Assert
+            Assert.Equal(2, nearestElevator.CurrentFloor);
         }
     }
 }
