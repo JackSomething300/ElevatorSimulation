@@ -16,7 +16,8 @@ The Elevator Simulation Program is a console application written in C# that simu
 
 ## Usage
 Run the application:
-
+ **Please clean and rebuild the application to restore nuget packages and build the program. Thanks**
+ 
 bash
 ```
 dotnet run --project ElevatorSimulation
