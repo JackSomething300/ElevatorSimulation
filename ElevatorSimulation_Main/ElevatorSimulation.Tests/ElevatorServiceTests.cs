@@ -100,5 +100,45 @@ namespace ElevatorSimulation.Tests
             // Assert
             Assert.Equal(2, nearestElevator.CurrentFloor);
         }
+
+        [Fact]
+        public void MoveElevatorToFloor_Should_Move_Elevator_Up_Successfully()
+        {
+            // Arrange
+            var building = new Building(10, 3, 5);
+            var mockStrategy = new Mock<IElevatorControlStrategy>();
+
+            var elevator = building.Elevators.First();
+            elevator.CurrentFloor = 0;
+
+            var service = new ElevatorService(building, mockStrategy.Object);
+
+            // Act
+            service.MoveElevatorToFloor(elevator, 5);
+
+            // Assert
+            Assert.Equal(5, elevator.CurrentFloor);
+            Assert.Equal("Stationary", elevator.Direction);
+        }
+
+        [Fact]
+        public void MoveElevatorToFloor_Should_Move_Elevator_Down_Successfully()
+        {
+            // Arrange
+            var building = new Building(10, 3, 5);
+            var mockStrategy = new Mock<IElevatorControlStrategy>();
+
+            var elevator = building.Elevators.First();
+            elevator.CurrentFloor = 7;
+
+            var service = new ElevatorService(building, mockStrategy.Object);
+
+            // Act
+            service.MoveElevatorToFloor(elevator, 3);
+
+            // Assert
+            Assert.Equal(3, elevator.CurrentFloor);
+            Assert.Equal("Stationary", elevator.Direction);
+        }
     }
 }

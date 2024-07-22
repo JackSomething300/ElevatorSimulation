@@ -70,7 +70,7 @@ namespace ElevatorSimulation_Main.Services
             
         }
 
-        private void MoveElevatorToFloor(Elevator elevator, int floor)
+        public void MoveElevatorToFloor(Elevator elevator, int floor)
         {
             if (elevator != null && floor > -1)
             {

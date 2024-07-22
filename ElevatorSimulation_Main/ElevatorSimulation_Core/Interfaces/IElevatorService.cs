@@ -11,6 +11,7 @@ namespace ElevatorSimulation_Core.Interfaces
     {
         void CallElevator(int currentFloor, int floor, int passengers);
         void MoveElevator(Elevator elevator, int currentFloor, int destinationFloor);
+        void MoveElevatorToFloor(Elevator elevator, int floor);
         void UpdateElevatorStatus();
     }
 }
