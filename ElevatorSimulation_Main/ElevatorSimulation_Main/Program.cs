@@ -10,6 +10,15 @@ namespace ElevatorSimulation
 {
     public class Program
     {
+        /// <summary>
+        /// Entry point for the Elevator Simulation application.
+        /// </summary>
+        /// <param name="args">Command-line arguments.</param>
+        /// <remarks>
+        /// This method configures services, initializes the elevator service, and continuously processes user commands 
+        /// to interact with the elevator system. The available commands allow the user to call the elevator or exit the application. 
+        /// It handles various exceptions to ensure smooth operation and provides user feedback for invalid commands and errors.
+        /// </remarks>
         static void Main(string[] args)
         {
             var serviceProvider = ConfigureServices();
@@ -75,7 +84,7 @@ namespace ElevatorSimulation
         private static List<(int CurrentFloor, int DestinationFloor, int Passengers)> CollectRequests(IBuilding building)
         {
             var requests = new List<(int, int, int)>();
-            Console.WriteLine("At any point, enter done to end your selection");
+            Console.WriteLine("At any point, enter [done] to end your selection");
 
             while (true)
             {
@@ -118,7 +127,7 @@ namespace ElevatorSimulation
         private static ServiceProvider ConfigureServices()
         {
             return new ServiceCollection()
-                .AddSingleton<IBuilding>(new Building(10, 3, 5)) // Manually create the Building instance
+                .AddSingleton<IBuilding>(new Building(10, 3, 5))
                 .AddSingleton<IElevatorService, ElevatorService>()
                 .AddSingleton<IElevatorControlStrategy, ElevatorControlStrategy>()
                 .BuildServiceProvider();

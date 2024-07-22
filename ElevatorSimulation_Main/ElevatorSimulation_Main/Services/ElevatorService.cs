@@ -18,8 +18,19 @@ namespace ElevatorSimulation_Main.Services
         {
             _building = building;
             _elevatorControlStrategy = elevatorControlStrategy;
-        }   
+        }
 
+        /// <summary>
+        /// Handles the request to call an elevator to a specified floor and move passengers to a destination floor.
+        /// </summary>
+        /// <param name="currentFloor">The floor from which the elevator is being called.</param>
+        /// <param name="destinationFloor">The floor to which the passengers wish to travel.</param>
+        /// <param name="passengers">The number of passengers requesting the elevator.</param>
+        /// <remarks>
+        /// This method locates the nearest available elevator, checks its capacity, and moves it to the requested floor 
+        /// if there is enough space for the passengers. It provides feedback if no elevators are available or if the nearest 
+        /// elevator lacks sufficient capacity. All exceptions are caught and logged to ensure smooth operation.
+        /// </remarks>
         public void CallElevator(int currentFloor, int destinationFloor, int passengers)
         {
             try
@@ -70,6 +81,7 @@ namespace ElevatorSimulation_Main.Services
             
         }
 
+        //Call functions of the elevator object to move it to the desired floor
         public void MoveElevatorToFloor(Elevator elevator, int floor)
         {
             if (elevator != null && floor > -1)
